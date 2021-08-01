@@ -17,7 +17,6 @@ workspace "Server"
 outputdir = "%{cfg.buildcfg}-%{cfg.system}-%{cfg.architecture}"
 
 include "vendor/glfw"
-include "vendor/glad"
 
 project "Server"
 	location "server"
