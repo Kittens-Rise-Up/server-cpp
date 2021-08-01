@@ -17,6 +17,7 @@ workspace "Server"
 outputdir = "%{cfg.buildcfg}-%{cfg.system}-%{cfg.architecture}"
 
 include "vendor/glfw"
+include "vendor/glad"
 
 project "Server"
 	location "server"
@@ -40,12 +41,16 @@ project "Server"
 	includedirs
 	{
 		"engine/src",
-		"vendor/glfw/include"
+		"vendor/glad/include",
+		"vendor/glfw/include",
+		"vendor/imgui",
+		"vendor/enet/include"
 	}
 
 	links 
 	{ 
-		"glfw"
+		"glfw",
+		"glad"
 	}
 
 	defines
