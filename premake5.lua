@@ -35,7 +35,7 @@ project "Server"
 	files
 	{
 		"server/src/**.h",
-		"server/src/**.cpp",
+		"server/src/**.cpp"
 	}
 
 	includedirs
@@ -43,7 +43,7 @@ project "Server"
 		"engine/src",
 		"vendor/glad/include",
 		"vendor/glfw/include",
-		"vendor/imgui",
+		"vendor/imgui/include",
 		"vendor/enet/include"
 	}
 

@@ -1,8 +1,8 @@
 #include "vkpch.h"
 
 #include <imgui.h>
-#include <backends/imgui_impl_glfw.h>
-#include <backends/imgui_impl_opengl3.h>
+#include <imgui_impl_glfw.h>
+#include <imgui_impl_opengl3.h>
 
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
@@ -41,9 +41,7 @@ int main()
 
 	// Initialize the OpenGL loading library GLAD
 	if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
-	{
 		std::cerr << "Failed to initialize GLAD" << std::endl;
-	}
 
 	// Enable VSync (1 = enabled, 0 = disabled)
 	glfwSwapInterval(1);

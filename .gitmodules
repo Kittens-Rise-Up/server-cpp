@@ -4,9 +4,6 @@
 [submodule "vendor/glfw"]
 	path = vendor/glfw
 	url = https://github.com/TheCherno/glfw
-[submodule "vendor/imgui"]
-	path = vendor/imgui
-	url = https://github.com/ocornut/imgui
 [submodule "vendor/enet"]
 	path = vendor/enet
 	url = https://github.com/lsalzman/enet
