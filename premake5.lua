@@ -44,7 +44,7 @@ project "Server"
 		"engine/src",
 		"vendor/glad/include",
 		"vendor/glfw/include",
-		"vendor/imgui/include",
+		"vendor/imgui",
 		"vendor/enet/include"
 	}
 
