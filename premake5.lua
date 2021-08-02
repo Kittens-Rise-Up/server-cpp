@@ -18,6 +18,7 @@ outputdir = "%{cfg.buildcfg}-%{cfg.system}-%{cfg.architecture}"
 
 include "vendor/glfw"
 include "vendor/glad"
+include "vendor/imgui"
 
 project "Server"
 	location "server"
@@ -50,7 +51,8 @@ project "Server"
 	links 
 	{ 
 		"glfw",
-		"glad"
+		"glad",
+		"imgui"
 	}
 
 	defines
