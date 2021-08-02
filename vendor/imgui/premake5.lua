@@ -1,22 +1,33 @@
-project "imgui"
+project "ImGui"
 	kind "StaticLib"
 	language "C++"
-	staticruntime "off"
+    staticruntime "off"
 
-	targetdir ("bin")
-	objdir ("bin-int/" .. outputdir .. "/server")
+	targetdir ("bin/" .. outputdir .. "/%{prj.name}")
+	objdir ("bin-int/" .. outputdir .. "/%{prj.name}")
 
 	files
 	{
-		"**.cpp"
+		"imconfig.h",
+		"imgui.h",
+		"imgui.cpp",
+		"imgui_draw.cpp",
+		"imgui_internal.h",
+		"imgui_widgets.cpp",
+		"imstb_rectpack.h",
+		"imstb_textedit.h",
+		"imstb_truetype.h",
+		"imgui_demo.cpp"
 	}
-	
-	filter "system:linux"
-		pic "On"
-		systemversion "latest"
 
 	filter "system:windows"
 		systemversion "latest"
+		cppdialect "C++17"
+
+	filter "system:linux"
+		pic "On"
+		systemversion "latest"
+		cppdialect "C++17"
 
 	filter "configurations:Debug"
 		runtime "Debug"

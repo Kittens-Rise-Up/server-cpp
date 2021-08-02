@@ -52,7 +52,7 @@ project "Server"
 	{ 
 		"glfw",
 		"glad",
-		"imgui"
+		"ImGui"
 	}
 
 	defines
