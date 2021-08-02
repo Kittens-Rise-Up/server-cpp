@@ -3,7 +3,7 @@ project "imgui"
 	language "C++"
 	staticruntime "off"
 
-	targetdir ("bin/" .. outputdir .. "/server")
+	targetdir ("bin")
 	objdir ("bin-int/" .. outputdir .. "/server")
 
 	files

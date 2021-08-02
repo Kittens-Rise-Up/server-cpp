@@ -31,7 +31,7 @@ project "Server"
 	pchsource "server/src/vkpch.cpp"
 
 	targetdir ("bin")
-	objdir ("bin-int/" .. outputdir .. "/%{prj.name}")
+	objdir ("bin-int/" .. outputdir .. "/server")
 
 	files
 	{
