@@ -19,6 +19,7 @@ outputdir = "%{cfg.buildcfg}-%{cfg.system}-%{cfg.architecture}"
 include "vendor/glfw"
 include "vendor/glad"
 include "vendor/imgui"
+include "vendor/enet"
 
 project "Server"
 	location "server"
