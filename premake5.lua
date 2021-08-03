@@ -42,7 +42,7 @@ project "Server"
 
 	includedirs
 	{
-		"engine/src",
+		"server/src",
 		"vendor/glad/include",
 		"vendor/glfw/include",
 		"vendor/imgui",

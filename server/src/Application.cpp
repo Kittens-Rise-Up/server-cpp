@@ -9,14 +9,15 @@
 
 #include <chrono>
 #include <date/date.h>
-#include <enet/enet.h>
+
+#include <thread>
+#include "Server/Server.h"
 
 const GLubyte GLFW_VER_MAJOR = 4;
 const GLubyte GLFW_VER_MINOR = 6;
 
 std::vector<std::string> m_Messages;
 bool m_ScrollToBottom;
-char input[128] = "";
 
 void GLFWErrorCallback(int error, const char* description)
 {
@@ -123,16 +124,10 @@ int main()
 	//windowImGuiFlags |= ImGuiWindowFlags_NoScrollWithMouse;
 	windowImGuiFlags |= ImGuiWindowFlags_NoFocusOnAppearing;
 		
-	char log[128] = "My name is bob";
+	char input[128] = "";
 	auto inputReclaimFocus = true;
 
-	// ENet
-	if (enet_initialize() != 0)
-	{
-		std::cerr << "Failed to initialize ENet" << std::endl;
-		return EXIT_FAILURE;
-	}
-	
+	std::thread server(Server::WorkerThread);
 
 	while (!glfwWindowShouldClose(window))
 	{
@@ -208,5 +203,7 @@ int main()
 	glfwDestroyWindow(window);
 	glfwTerminate();
 
-	atexit(enet_deinitialize);
+	Server::m_StopWorker = true;
+	server.join();
+	
 }
