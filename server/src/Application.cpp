@@ -7,6 +7,10 @@
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 
+#include <chrono>
+#include <date/date.h>
+#include <enet/enet.h>
+
 const GLubyte GLFW_VER_MAJOR = 4;
 const GLubyte GLFW_VER_MINOR = 6;
 
@@ -25,22 +29,27 @@ void AddMessage(std::string message)
 	m_ScrollToBottom = true;
 }
 
-void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods)
+void HandleCommand(char* cmd) 
 {
-	if (key == GLFW_KEY_ENTER && action == GLFW_PRESS) 
-	{
-		std::cout << "Enter" << std::endl;
-		memset(input, 0, 128);
-	}
-		
+	std::cout << cmd << std::endl;
+	std::string str(cmd);
+
+	using namespace std::chrono;
+	auto now = time_point_cast<milliseconds>(system_clock::now());
+	std::string time = date::format("%H:%M:%OS", now);
+
+	std::string msg = "[" + time + "] [INFO] " + "Unknown Command: '" + str + "'";
+
+	AddMessage(msg);
 }
 
 int main() 
 {
+	// GLFW
 	if (!glfwInit()) 
 	{
 		std::cerr << "Failed to initialize GLFW" << std::endl;
-		return 1;
+		return EXIT_FAILURE;
 	}
 
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, GLFW_VER_MAJOR);
@@ -60,25 +69,27 @@ int main()
 	if (!window) 
 	{
 		std::cerr << "Failed to create GLFW window" << std::endl;
-		return 1;
+		return EXIT_FAILURE;
 	}
 		
 
 	glfwMakeContextCurrent(window);
 
 	// Initialize the OpenGL loading library GLAD
-	if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
+	if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress)) 
+	{
 		std::cerr << "Failed to initialize GLAD" << std::endl;
+		return EXIT_FAILURE;
+	}
 
 	// Enable VSync (1 = enabled, 0 = disabled)
 	glfwSwapInterval(1);
-
-	glfwSetKeyCallback(window, key_callback);
 
 	IMGUI_CHECKVERSION();
 	ImGui::CreateContext();
 	auto io = ImGui::GetIO();
 	io.Fonts->AddFontFromFileTTF("res/RobotoMono-Regular.ttf", 18);
+	io.ConfigWindowsMoveFromTitleBarOnly = true;
 
 	ImGui::StyleColorsDark();
 
@@ -109,16 +120,19 @@ int main()
 	windowImGuiFlags |= ImGuiWindowFlags_NoMove;
 	windowImGuiFlags |= ImGuiWindowFlags_NoResize;
 	windowImGuiFlags |= ImGuiWindowFlags_NoScrollbar;
-	windowImGuiFlags |= ImGuiWindowFlags_NoScrollWithMouse;
+	//windowImGuiFlags |= ImGuiWindowFlags_NoScrollWithMouse;
 	windowImGuiFlags |= ImGuiWindowFlags_NoFocusOnAppearing;
-
-	for (int i = 0; i < 50; i++) 
-	{
-		std::string message = "Hello world! " + std::to_string(++index);
-		AddMessage(message);
-	}
 		
 	char log[128] = "My name is bob";
+	auto inputReclaimFocus = true;
+
+	// ENet
+	if (enet_initialize() != 0)
+	{
+		std::cerr << "Failed to initialize ENet" << std::endl;
+		return EXIT_FAILURE;
+	}
+	
 
 	while (!glfwWindowShouldClose(window))
 	{
@@ -131,38 +145,54 @@ int main()
 		ImGui::PushStyleVar(ImGuiStyleVar_ScrollbarSize, 12);
 		ImGui::PushStyleVar(ImGuiStyleVar_ScrollbarRounding, 15);
 		ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 0);
-		ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0, 0));
+		//ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0, 0));
 		ImGui::PushStyleColor(ImGuiCol_WindowBg, ImVec4(0.0f, 0.0f, 0.0f, 1.0f));
+		ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.8f, 0.8f, 0.8f, 1.0f));
 
 		// LOGGER
 		ImGui::SetNextWindowPos(ImVec2(0, 0));
-		ImGui::SetNextWindowSize(ImVec2(windowWidth, windowHeight));
-		ImGui::Begin("Logger", &loggerOpen, windowImGuiFlags);
+		ImGui::SetNextWindowSize(ImVec2(windowWidth, windowHeight - inputHeight - 25));
+		if (ImGui::Begin("Logger", &loggerOpen, windowImGuiFlags)) 
+		{
+			for (int i = 0; i < m_Messages.size(); i++)
+				ImGui::TextWrapped(m_Messages[i].c_str());
 
-		auto width = ImGui::CalcTextSize(input).x;
-		if (width > 200)
-			log[75] = '\n';
+			if (m_ScrollToBottom) 
+			{
+				ImGui::SetScrollHereY(1.0f); // Scroll to bottom
+				m_ScrollToBottom = false;
+			}
 
-		ImGui::InputTextMultiline("", log, IM_ARRAYSIZE(log), ImVec2(windowWidth, windowHeight - 30), ImGuiInputTextFlags_NoHorizontalScroll | ImGuiInputTextFlags_ReadOnly);
+			ImGui::End();
+		}
 
-		ImGui::PushItemWidth(windowWidth);
-		
-		ImGui::InputText(".", input, IM_ARRAYSIZE(input));
-		//ImGui::SetKeyboardFocusHere(0);
+		ImGui::SetNextWindowPos(ImVec2(0, windowHeight - inputHeight - 25));
+		ImGui::SetNextWindowSize(ImVec2(windowWidth, inputHeight));
+		if (ImGui::Begin("Input", &loggerOpen, windowImGuiFlags)) 
+		{
+			ImGui::PushItemWidth(windowWidth);
+			if (ImGui::InputText(".", input, IM_ARRAYSIZE(input), ImGuiInputTextFlags_EnterReturnsTrue))
+			{
+				auto s = input;
+				HandleCommand(s);
 
-		ImGui::PopItemWidth();
-		ImGui::End();
+				strcpy(s, ""); // Clear input
+				inputReclaimFocus = true;
+				
+			}
+			ImGui::PopItemWidth();
 
-		ImGui::PopStyleColor();
-		ImGui::PushStyleColor(ImGuiCol_WindowBg, ImVec4(1.0f, 0.0f, 0.0f, 1.0f));
+			if (inputReclaimFocus)
+			{
+				ImGui::SetKeyboardFocusHere(-1);
+				inputReclaimFocus = false;
+			}
 
-		// INPUT
+			ImGui::End();
+		}
 
-		
-
-
-		ImGui::PopStyleColor();
-		ImGui::PopStyleVar(4);
+		ImGui::PopStyleColor(2);
+		ImGui::PopStyleVar(3);
 
 		ImGui::Render();
 		ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
@@ -177,4 +207,6 @@ int main()
 
 	glfwDestroyWindow(window);
 	glfwTerminate();
+
+	atexit(enet_deinitialize);
 }

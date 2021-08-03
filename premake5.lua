@@ -45,14 +45,16 @@ project "Server"
 		"vendor/glad/include",
 		"vendor/glfw/include",
 		"vendor/imgui",
-		"vendor/enet/include"
+		"vendor/enet/include",
+		"vendor/date/include"
 	}
 
 	links 
 	{ 
 		"glfw",
 		"glad",
-		"ImGui"
+		"ImGui",
+		"enet"
 	}
 
 	defines
