@@ -3,4 +3,4 @@
 	url = https://github.com/TheCherno/glfw
 [submodule "vendor/enet"]
 	path = vendor/enet
-	url = https://github.com/lsalzman/enet
+	url = https://github.com/valkyrienyanko/enet
