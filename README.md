@@ -1,3 +1,5 @@
+Note that this repo is using the C++ version of ENet and not the C# version (If C# is preferred then get native ENet binaries from ENet-CSharp rpeo)
+
 ## Setup
 Start by cloning the repository with `git clone --recursive https://github.com/Raccoons-Rise-Up/server-cpp.git`.
 
